@@ -1,38 +1,54 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Project_ethan_primak {
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        
-        System.out.print("Please enter the Policy Number: ");
-        String policyNum = scanner.nextLine();
+        ArrayList<Policy> policies = new ArrayList<>();
+        int smokerCount = 0;
+        int nonSmokerCount = 0;
 
-        System.out.print("Please enter the Provider Name: ");
-        String providerName = scanner.nextLine();
+        try {
+            File file = new File("PolicyInformation.txt");
+            Scanner fileScanner = new Scanner(file);
 
-        System.out.print("Please enter the Policyholder’s First Name: ");
-        String fn = scanner.nextLine();
+            while (fileScanner.hasNextLine()) {
+                String policyNum = fileScanner.nextLine();
+                String providerName = fileScanner.nextLine();
+                String firstName = fileScanner.nextLine();
+                String lastName = fileScanner.nextLine();
+                int age = Integer.parseInt(fileScanner.nextLine());
+                String smokingStatus = fileScanner.nextLine();
+                double height = Double.parseDouble(fileScanner.nextLine());
+                double weight = Double.parseDouble(fileScanner.nextLine());
 
-        System.out.print("Please enter the Policyholder’s Last Name: ");
-        String ln = scanner.nextLine();
+                Policy policy = new Policy(policyNum, providerName, firstName, lastName, age, smokingStatus, height, weight);
+                policies.add(policy);
 
-        System.out.print("Please enter the Policyholder’s Age: ");
-        int age = Integer.parseInt(scanner.nextLine());
+                if (smokingStatus.equalsIgnoreCase("smoker")) {
+                    smokerCount++;
+                } else if (smokingStatus.equalsIgnoreCase("non-smoker")) {
+                    nonSmokerCount++;
+                }
 
-        System.out.print("Please enter the Policyholder’s Smoking Status (smoker/non-smoker): ");
-        String smokingStatus = scanner.nextLine();
+                if (fileScanner.hasNextLine()) { 
+                    fileScanner.nextLine();                 
+                }
+            }
 
-        System.out.print("Please enter the Policyholder’s Height (in inches): ");
-        double height = Double.parseDouble(scanner.nextLine());
-
-        System.out.print("Please enter the Policyholder’s Weight (in pounds): ");
-        double weight = Double.parseDouble(scanner.nextLine());
-
-        Policy policy = new Policy(policyNum, providerName, fn, ln, age, smokingStatus, height, weight);
+            fileScanner.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("policyinformation.txt not found");
+            return;
+        }
+        for (Policy policy : policies) {
+            System.out.println();
+            policy.displayPolicyDetails();
+        }
 
         System.out.println();
-        policy.displayPolicyDetails();
-
-        scanner.close();
+        System.out.println("The number of policies with a smoker is: " + smokerCount);
+        System.out.println("The number of policies with a non-smoker is: " + nonSmokerCount);
     }
 }
